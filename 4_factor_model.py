@@ -262,14 +262,23 @@ def main():
                         print(f"❌ Missing decile {col} in {decile_file}")
                         continue
 
-                    # Rename decile column to expected 'ga_factor_excess'
                     temp_df = merged.copy()
-                    temp_df['ga_factor_excess'] = temp_df[col] - temp_df['rf']
 
-                    # Label the regression more clearly
+                    # ✅ Calculate excess return for decile
+                    temp_df['decile_excess_return'] = temp_df[col] - temp_df['rf']
+
+
+                    # Use new column in regression
                     weighting_label = f"{weighting}-D{col}"
+                    model_results = run_factor_models(
+                        temp_df,
+                        'decile_excess_return',
+                        ga_choice,
+                        weighting_label,
+                        size_group
+                    )
 
-                    model_results = run_factor_models(temp_df, col, ga_choice, weighting_label, size_group)
+
                     if model_results is not None:
                         results_by_ga[ga_key].append(model_results)
                     else:
